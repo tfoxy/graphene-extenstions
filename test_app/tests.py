@@ -4,13 +4,9 @@ from graphene.test import Client
 
 from .schema import schema
 
-pytestmark = pytest.mark.django_db
-
 
 @pytest.mark.django_db
 class TestCase:
-    pytestmark = pytest.mark.django_db
-
     @classmethod
     def setup_class(cls):
         cls.client = Client(schema=schema)
