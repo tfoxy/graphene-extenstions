@@ -28,7 +28,12 @@ def register(_type: Type, graphene_type):
 
 register(models.AutoField, graphene.ID)
 register(models.IntegerField, graphene.Int)
+register(models.PositiveIntegerField, graphene.Int)
+register(models.SmallIntegerField, graphene.Int)
+register(models.PositiveSmallIntegerField, graphene.Int)
+register(models.BigIntegerField, graphene.Int)
 register(models.FloatField, graphene.Float)
+
 register(models.CharField, graphene.String)
 register(models.TextField, graphene.String)
 register(models.FileField, graphene.String)
