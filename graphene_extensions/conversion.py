@@ -16,10 +16,11 @@ class ConversionRegistry(metaclass=Singleton):
         assert issubclass(graphene_type, BaseType)
         self._registry[_type] = graphene.Field(type=graphene_type)
 
-    def get(self, _type: Type) -> graphene.Field:
-        if _type not in self._registry:
-            raise NotImplementedError(f'{_type} field conversion is not implemented')
-        return self._registry[_type]
+    def get(self, field: models.Field) -> graphene.Field:
+        type_ = field.__class__
+        if type_ not in self._registry:
+            raise NotImplementedError(f'{type_} field conversion is not implemented')
+        return self._registry[type_]
 
 
 def register(_type: Type, graphene_type: Type[BaseType]) -> None:

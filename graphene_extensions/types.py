@@ -18,29 +18,15 @@ class ModelObjectTypeOptions(ObjectTypeOptions):
 
 class ModelObjectType(ObjectType):
     @classmethod
-    def __init_subclass_with_meta__(
-            cls,
-            interfaces=(),
-            possible_types=(),
-            default_resolver=None,
-            _meta=None,
-            model=None,
-            fields=None,
-            **options,
-    ):
+    def __init_subclass_with_meta__(cls, interfaces=(), possible_types=(), default_resolver=None,
+                                    _meta=None, model=None, fields=None, **options):
         if not _meta:
             _meta = ModelObjectTypeOptions(cls)
             _meta.model = cls.resolve_model(model)
             _meta.connection = cls.create_connection()
             _meta.fields = cls.resolve_fields(model, fields)
         cls.validate_meta(_meta)
-        super().__init_subclass_with_meta__(
-            interfaces=interfaces,
-            possible_types=possible_types,
-            default_resolver=default_resolver,
-            _meta=_meta,
-            **options,
-        )
+        super().__init_subclass_with_meta__(interfaces, possible_types, default_resolver, _meta, **options)
 
     def resolve_id(self, info):  # used to determine ID field when using relay.Node interface
         return self.pk
@@ -61,14 +47,14 @@ class ModelObjectType(ObjectType):
         if isinstance(fields, (list, tuple)):
             for field in fields:
                 assert isinstance(field, str), f'Field name should be of type str, received {field}'
-                assert field in model_fields, f'Invalid field {field}, options are: {model_fields}'
+                assert field in model_fields, f'Invalid field "{field}", options are: {tuple(model_fields.keys())}'
         elif isinstance(fields, str):
             assert fields in ('__all__',), message
         else:
             raise AssertionError(message)
 
     @classmethod
-    def get_model_fields(cls, model: (Type[models.Model]))-> Dict[str, models.Field]:
+    def get_model_fields(cls, model: (Type[models.Model])) -> Dict[str, models.Field]:
         return {field.name: field for field in model._meta.fields}
 
     @classmethod
@@ -84,7 +70,7 @@ class ModelObjectType(ObjectType):
 
     @classmethod
     def get_graphene_type(cls, field: models.Field) -> graphene.Field:
-        return ConversionRegistry().get(field.__class__)
+        return ConversionRegistry().get(field)
 
     @classmethod
     def resolve_model(cls, model):

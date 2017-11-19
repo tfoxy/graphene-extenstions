@@ -10,6 +10,16 @@ from .models import PizzaType, Pizza, PandorasBox
 
 
 @pytest.fixture(scope='session')
+def empty_schema():
+    class Query(graphene.ObjectType):
+        data = graphene.Field(type=graphene.String)
+
+        def resolve_data(self, info) -> str:
+            return 'dummy data'
+    return graphene.Schema(query=Query)
+
+
+@pytest.fixture(scope='session')
 def pizza_types():
     return (
         PizzaType.objects.create(name='regular'),
