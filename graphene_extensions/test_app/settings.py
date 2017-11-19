@@ -17,7 +17,6 @@ INSTALLED_APPS = [
 
     'graphene_extensions',
     'graphene_extensions.test_app',
-    'graphene_django',
     'debug_toolbar',
 ]
 

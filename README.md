@@ -5,6 +5,7 @@ Goal of this library is to make development on graphene a lot simpler and quicke
 ## Requirements
 * Python 3.6+
 * graphene 2.0+
+* Django 1.10+
 
 ## Purpose
 Why another library if there is already `graphene-django` available?

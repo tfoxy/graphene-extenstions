@@ -2,13 +2,13 @@ import json
 from collections import OrderedDict
 from typing import Tuple, Union
 
-from django.core.handlers.wsgi import WSGIRequest
-
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+
 from graphql.type.schema import GraphQLSchema
 
 from .query import get_query_from_request, QueryExecutor
@@ -39,9 +39,11 @@ class GraphQLView(View):
         result, status_code = self.get_query_result(query)
 
         if self.show_graphiql:
+            print(query, 'dupa')
             context = self.get_context_data()
             context.update({'result': result if query else '', 'query': query})
-            return render(self.request, self.graphiql_template, context=context, status=status_code)
+            return render(self.request, self.graphiql_template, context=context,
+                          status=status_code if query else STATUS_200_OK)
 
         return HttpResponse(content=result, status=status_code, content_type='application/json')
 

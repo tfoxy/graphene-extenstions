@@ -1,5 +1,4 @@
 graphene==2.0
-graphene-django  # TODO: remove
 django
 psycopg2
 pytest
