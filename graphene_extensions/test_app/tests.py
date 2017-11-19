@@ -36,4 +36,4 @@ def test_number_conversion(pandoras_box_schema, pandoras_box: PandorasBox):
     assert 'errors' not in response, response['errors']
     data: dict = response['data']['pandoras_box']
     for field, value in data.items():
-        assert getattr(pandoras_box, field) == value
+        assert getattr(pandoras_box, field) == value, f'expected {field}: {getattr(pandoras_box, field)} to be {value}'

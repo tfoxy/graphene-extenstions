@@ -15,7 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'test_app',
+    'graphene_extensions.test_app',
     'graphene_django',
     'debug_toolbar',
 ]
@@ -31,7 +31,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'test_app.urls'
+ROOT_URLCONF = 'graphene_extensions.test_app.urls'
 
 TEMPLATES = [
     {
@@ -49,13 +49,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'test_app.wsgi.application'
+WSGI_APPLICATION = 'graphene_extensions.test_app.wsgi.application'
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '../../db.sqlite3'),
     }
 }
 
@@ -68,7 +68,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 GRAPHENE = {
-    'SCHEMA': 'test_app.schema.schema',
+    'SCHEMA': 'graphene_extensions.test_app.schema.schema',
 }
 
 LANGUAGE_CODE = 'en-us'
