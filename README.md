@@ -2,6 +2,9 @@
 Goal of this library is to make development on graphene a lot simpler and quicker,
  which means less boiler plate and more flexibility.
 
+## Requirements
+* Python 3.6+
+* graphene 2.0+
 
 ## Purpose
 Why another library if there is already `graphene-django` available?

@@ -1,6 +1,7 @@
 from typing import Type, Dict
 from inspect import isclass
 
+import graphene
 from collections import OrderedDict
 from graphene import relay
 from graphene.types.objecttype import ObjectType, ObjectTypeOptions
@@ -49,12 +50,13 @@ class ModelObjectType(ObjectType):
         return relay.Connection.create_type(class_name=f'{cls.__name__}Connection', node=cls)
 
     @classmethod
-    def validate_meta(cls, _meta: ModelObjectTypeOptions) -> None:
+    def validate_meta(cls, _meta: ModelObjectTypeOptions):
+        # type: (ModelObjectTypeOptions) -> None
         assert isinstance(_meta, ModelObjectTypeOptions), \
             f'class {_meta.__name__} must derive from ModelObjectTypeOptions'
 
     @classmethod
-    def validate_fields(cls, model_fields: Dict[str, models.Field], fields):
+    def validate_fields(cls, model_fields: dict, fields) -> None:
         message = f'Meta.fields must be either a Tuple/List of model field names or "__all__"'
         if isinstance(fields, (list, tuple)):
             for field in fields:
@@ -66,11 +68,11 @@ class ModelObjectType(ObjectType):
             raise AssertionError(message)
 
     @classmethod
-    def get_model_fields(cls, model: Type[models.Model]) -> Dict[str, models.Field]:
+    def get_model_fields(cls, model: (Type[models.Model]))-> Dict[str, models.Field]:
         return {field.name: field for field in model._meta.fields}
 
     @classmethod
-    def resolve_fields(cls, model: models.Model, fields) -> Dict[str, None]:
+    def resolve_fields(cls, model: Type[models.Model], fields) -> Dict[str, None]:
         resolved_fields = OrderedDict()
         model_fields = cls.get_model_fields(model)
         cls.validate_fields(model_fields, fields)
@@ -81,7 +83,7 @@ class ModelObjectType(ObjectType):
         return resolved_fields
 
     @classmethod
-    def get_graphene_type(cls, field: models.Field):
+    def get_graphene_type(cls, field: models.Field) -> graphene.Field:
         return ConversionRegistry().get(field.__class__)
 
     @classmethod

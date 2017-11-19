@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 from random import randint
 
@@ -17,7 +19,7 @@ def pizza_types():
 
 
 @pytest.fixture(scope='session')
-def pizzas(pizza_types):
+def pizzas(pizza_types: List[PizzaType]) -> List[Pizza]:
     regular, vegetarian, hipster = pizza_types
     return (
         Pizza.objects.create(name='margarita', type=vegetarian),
@@ -29,7 +31,7 @@ def pizzas(pizza_types):
 
 
 @pytest.fixture(scope='session')
-def pandoras_box():
+def pandoras_box() -> PandorasBox:
     return PandorasBox(
         int=randint(-2 ** 31 + 1, 2 ** 31),
         small_int=randint(-2 ** 16 + 1, 2 ** 16),
@@ -37,7 +39,7 @@ def pandoras_box():
 
 
 @pytest.fixture(scope='session')
-def pandoras_box_schema(pandoras_box):
+def pandoras_box_schema(pandoras_box: PandorasBox) -> graphene.Schema:
     class PandorasBoxObject(ModelObjectType):
         class Meta:
             model = PandorasBox

@@ -12,17 +12,17 @@ from .singleton import Singleton
 class ConversionRegistry(metaclass=Singleton):
     _registry = {}
 
-    def register(self, _type, graphene_type):
+    def register(self, _type: Type, graphene_type: Type[BaseType]) -> None:
         assert issubclass(graphene_type, BaseType)
         self._registry[_type] = graphene.Field(type=graphene_type)
 
-    def get(self, _type: Type):
+    def get(self, _type: Type) -> graphene.Field:
         if _type not in self._registry:
             raise NotImplementedError(f'{_type} field conversion is not implemented')
         return self._registry[_type]
 
 
-def register(_type: Type, graphene_type):
+def register(_type: Type, graphene_type: Type[BaseType]) -> None:
     ConversionRegistry().register(_type, graphene_type)
 
 
