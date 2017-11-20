@@ -4,9 +4,12 @@ import pytest
 from random import randint
 
 import graphene
+from graphene import relay
+
+from graphene_extensions import ModelConnectionField
 from graphene_extensions.types import ModelObjectType
 
-from .models import PizzaType, Pizza, PandorasBox
+from .models import PizzaType, Pizza, PandorasBox, Topping
 
 
 @pytest.fixture(scope='session')
@@ -20,24 +23,45 @@ def empty_schema():
 
 
 @pytest.fixture(scope='session')
-def pizza_types():
-    return (
+def pizza_types() -> List[PizzaType]:
+    return [
         PizzaType.objects.create(name='regular'),
         PizzaType.objects.create(name='vegetarian'),
         PizzaType.objects.create(name='hipster'),
-    )
+    ]
 
 
 @pytest.fixture(scope='session')
 def pizzas(pizza_types: List[PizzaType]) -> List[Pizza]:
     regular, vegetarian, hipster = pizza_types
-    return (
+    return [
         Pizza.objects.create(name='margarita', type=vegetarian),
         Pizza.objects.create(name='pepperoni', type=regular),
         Pizza.objects.create(name='ananas', type=hipster),
         Pizza.objects.create(name='american', type=regular),
         Pizza.objects.create(name='meat', type=regular),
-    )
+    ]
+
+
+@pytest.fixture(scope='session')
+def pizza_schema() -> graphene.Schema:
+    class PizzaObject(ModelObjectType):
+        class Meta:
+            model = Pizza
+            fields = ('name', 'toppings')
+            interfaces = (relay.Node,)
+
+    class ToppingObject(ModelObjectType):
+        class Meta:
+            model = Topping
+            fields = ('name',)
+            interfaces = (relay.Node,)
+
+    class Query(graphene.ObjectType):
+        pizzas = ModelConnectionField(PizzaObject)
+        toppings = ModelConnectionField(ToppingObject)
+
+    return graphene.Schema(query=Query)
 
 
 @pytest.fixture(scope='session')

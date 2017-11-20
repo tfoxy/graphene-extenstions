@@ -39,7 +39,6 @@ class GraphQLView(View):
         result, status_code = self.get_query_result(query)
 
         if self.show_graphiql:
-            print(query, 'dupa')
             context = self.get_context_data()
             context.update({'result': result if query else '', 'query': query})
             return render(self.request, self.graphiql_template, context=context,

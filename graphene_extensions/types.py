@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Type, Dict
 from inspect import isclass
 
@@ -8,7 +9,7 @@ from graphene.types.objecttype import ObjectType, ObjectTypeOptions
 
 from django.db import models
 
-from .conversion import ConversionRegistry
+from .registry import ConversionRegistry, ModelRegistry
 
 
 class ModelObjectTypeOptions(ObjectTypeOptions):
@@ -26,6 +27,7 @@ class ModelObjectType(ObjectType):
             _meta.connection = cls.create_connection()
             _meta.fields = cls.resolve_fields(model, fields)
         cls.validate_meta(_meta)
+        ModelRegistry().register(model, cls)
         super().__init_subclass_with_meta__(interfaces, possible_types, default_resolver, _meta, **options)
 
     def resolve_id(self, info):  # used to determine ID field when using relay.Node interface
@@ -55,7 +57,7 @@ class ModelObjectType(ObjectType):
 
     @classmethod
     def get_model_fields(cls, model: (Type[models.Model])) -> Dict[str, models.Field]:
-        return {field.name: field for field in model._meta.fields}
+        return {field.name: field for field in chain(model._meta.fields, model._meta.many_to_many)}
 
     @classmethod
     def resolve_fields(cls, model: Type[models.Model], fields) -> Dict[str, None]:

@@ -8,7 +8,7 @@ from graphene_extensions.views import GraphQLView
 
 
 def test_empty_query(rf: RequestFactory, empty_schema):
-    for request in (rf.get('graphql', data={}), rf.post('graphql', data={})):
+    for request in (rf.get('graphql', data={}), rf.post('graphql')):
         response: HttpResponse = GraphQLView.as_view(schema=empty_schema)(request)
         assert response.status_code == STATUS_400_BAD_REQUEST, str(response.content)
         assert b'Syntax Error GraphQL' in response.content and b'Unexpected EOF' in response.content
