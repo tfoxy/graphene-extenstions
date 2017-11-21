@@ -1,18 +1,26 @@
+from functools import partial
 from typing import Type
 
+from graphql.execution.base import ResolveInfo
 from graphene.relay import Connection, ConnectionField
+
+from graphene_extensions.utils.selectors import get_selectors_from_info, strip_relay_selectors, Selector
 
 from django.db.models import Manager, Model, QuerySet
 
 
 class ModelConnectionField(ConnectionField):
     @classmethod
+    def connection_resolver(cls, resolver: partial, connection_type, root, info, **kwargs):
+        return super().connection_resolver(resolver, connection_type, root, info, connection_info=info, **kwargs)
+
+    @classmethod
     def resolve_connection(cls, connection_type, args, resolved):
         if isinstance(resolved, Manager):
             resolved = resolved.get_queryset()
         else:
             model: Type[Model] = connection_type._meta.node._meta.model
-            resolved = cls.get_initial_queryset(model)
+            resolved = cls.get_initial_queryset(model, args['connection_info'])
         return super().resolve_connection(connection_type, args, resolved)
 
     @property
@@ -20,6 +28,11 @@ class ModelConnectionField(ConnectionField):
         return self._type._meta.connection
 
     @classmethod
-    def get_initial_queryset(cls, model: Type[Model]) -> QuerySet:
+    def get_initial_queryset(cls, model: Type[Model], info: ResolveInfo) -> QuerySet:
+        selectors = get_selectors_from_info(info)
         manager: Type[Manager] = model._default_manager
-        return manager.get_queryset()
+        return cls.optimize_queryset(manager.get_queryset(), strip_relay_selectors(selectors))
+
+    @classmethod
+    def optimize_queryset(cls, queryset: QuerySet, selectors: Selector) -> QuerySet:
+        return queryset

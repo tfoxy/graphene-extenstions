@@ -1,5 +1,4 @@
 from typing import Type, Dict, Callable
-from functools import partial
 
 import graphene
 from graphene.types.base import BaseType

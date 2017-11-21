@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Iterable
 
 import pytest
 from random import randint
@@ -23,6 +23,15 @@ def empty_schema():
 
 
 @pytest.fixture(scope='session')
+def toppings() -> List[Topping]:
+    return [
+        Topping.objects.create(name='mushrooms'),
+        Topping.objects.create(name='salami'),
+        Topping.objects.create(name='mozzarella'),
+    ]
+
+
+@pytest.fixture(scope='session')
 def pizza_types() -> List[PizzaType]:
     return [
         PizzaType.objects.create(name='regular'),
@@ -32,15 +41,17 @@ def pizza_types() -> List[PizzaType]:
 
 
 @pytest.fixture(scope='session')
-def pizzas(pizza_types: List[PizzaType]) -> List[Pizza]:
+def pizzas(pizza_types: List[PizzaType], toppings: List[Topping]) -> Iterable[Pizza]:
     regular, vegetarian, hipster = pizza_types
-    return [
+    for pizza in [
         Pizza.objects.create(name='margarita', type=vegetarian),
         Pizza.objects.create(name='pepperoni', type=regular),
         Pizza.objects.create(name='ananas', type=hipster),
         Pizza.objects.create(name='american', type=regular),
         Pizza.objects.create(name='meat', type=regular),
-    ]
+    ]:
+        pizza.toppings.set(toppings)
+        yield pizza
 
 
 @pytest.fixture(scope='session')

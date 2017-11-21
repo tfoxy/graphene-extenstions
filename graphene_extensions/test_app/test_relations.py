@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 
 import graphene
@@ -5,11 +7,7 @@ from graphene.test import Client
 
 from .models import PizzaType, Pizza, Topping
 
-
-@pytest.mark.django_db
-def test_nested_query(pizza_schema: graphene.Schema):
-    assert not Pizza.objects.exists()
-    query = '''
+pizza_topping_query = '''
     query {
       pizzas {
         edges {
@@ -26,14 +24,15 @@ def test_nested_query(pizza_schema: graphene.Schema):
       }
     }
     '''
-    pizza = Pizza.objects.create(type=PizzaType.objects.create())
-    pizza.toppings.set([
-        Topping.objects.create(name='mushrooms'),
-        Topping.objects.create(name='salami'),
-        Topping.objects.create(name='mozzarella'),
-    ])
 
-    response = Client(pizza_schema).execute(query)
+
+@pytest.mark.django_db
+def test_nested_query(pizza_schema: graphene.Schema, toppings: List[Topping]):
+    assert not Pizza.objects.exists()
+    pizza = Pizza.objects.create(type=PizzaType.objects.create())
+    pizza.toppings.set(toppings)
+
+    response = Client(pizza_schema).execute(pizza_topping_query)
     assert 'errors' not in response and 'data' in response, response
     pizzas = response['data']['pizzas']['edges']
     assert len(pizzas) == 1
