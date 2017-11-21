@@ -26,11 +26,11 @@ def is_prefetchable(field: Field) -> bool:
     return field.many_to_many or field.one_to_one or field.one_to_many or is_selectable(field)
 
 
-def get_model_select(model: Type[Model]) -> Dict[str, Model]:
+def get_model_select(model: Type[Model]) -> Dict[str, Type[Model]]:
     return {get_relation_name(field): field.related_model
             for field in get_related_fields(model) if is_selectable(field)}
 
 
-def get_model_prefetch(model: Type[Model]) -> Dict[str, Model]:
+def get_model_prefetch(model: Type[Model]) -> Dict[str, Type[Model]]:
     return {get_relation_name(field): field.related_model
             for field in get_related_fields(model) if is_prefetchable(field)}
