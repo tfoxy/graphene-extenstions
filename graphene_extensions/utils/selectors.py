@@ -20,8 +20,8 @@ def get_selectors_from_info(info: ResolveInfo) -> Selector:
 def strip_relay_selectors(selector: Selector):
     result_selector = selector.copy()
     for field, selection in result_selector.items():
-        if isinstance(selection, dict) and 'edges' in selection and 'node' in selection['edges']:
-            result_selector[field] = strip_relay_selectors(selection['edges']['node'])
+        if field == 'edges' and isinstance(selection, dict) and 'node' in selection:
+            return strip_relay_selectors(selection['node'])
         elif isinstance(selection, dict):
             result_selector[field] = strip_relay_selectors(selection)
     return result_selector

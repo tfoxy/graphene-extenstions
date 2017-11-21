@@ -67,9 +67,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-GRAPHENE = {
-    'SCHEMA': 'graphene_extensions.test_app.schema.schema',
-}
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

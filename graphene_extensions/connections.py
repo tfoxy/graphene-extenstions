@@ -1,9 +1,10 @@
-from functools import partial
 from typing import Type
 
 from graphql.execution.base import ResolveInfo
+
 from graphene.relay import Connection, ConnectionField
 
+from graphene_extensions.optimization import optimize_queryset
 from graphene_extensions.utils.selectors import get_selectors_from_info, strip_relay_selectors, Selector
 
 from django.db.models import Manager, Model, QuerySet
@@ -11,7 +12,7 @@ from django.db.models import Manager, Model, QuerySet
 
 class ModelConnectionField(ConnectionField):
     @classmethod
-    def connection_resolver(cls, resolver: partial, connection_type, root, info, **kwargs):
+    def connection_resolver(cls, resolver, connection_type, root, info, **kwargs):
         return super().connection_resolver(resolver, connection_type, root, info, connection_info=info, **kwargs)
 
     @classmethod
@@ -35,4 +36,4 @@ class ModelConnectionField(ConnectionField):
 
     @classmethod
     def optimize_queryset(cls, queryset: QuerySet, selectors: Selector) -> QuerySet:
-        return queryset
+        return optimize_queryset(queryset, selectors)
