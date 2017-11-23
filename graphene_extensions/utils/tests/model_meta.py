@@ -1,18 +1,18 @@
-from ..model_meta import get_field_names, get_related_fields, get_model_select, get_model_prefetch
+from ..model_meta import get_fields, get_related_fields, get_model_select, get_model_prefetch
 
 from graphene_extensions.test_app.models import PizzaType, Pizza, Topping
 
 
 def test_pizza_type_field_names():
-    assert get_field_names(PizzaType) == {'id', 'name', 'pizza_set'}
+    assert get_fields(PizzaType).keys() == {'id', 'pk', 'name', 'pizza_set'}
 
 
 def test_pizza_field_names():
-    assert get_field_names(Pizza) == {'id', 'type', 'name', 'toppings'}
+    assert get_fields(Pizza).keys() == {'id', 'pk', 'type', 'name', 'toppings'}
 
 
 def test_topping_field_names():
-    assert get_field_names(Topping) == {'id', 'name', 'pizza_set'}
+    assert get_fields(Topping).keys() == {'id', 'pk', 'name', 'pizza_set'}
 
 
 def test_related_fields():

@@ -1,14 +1,16 @@
 import collections
-from itertools import chain
-from typing import Type, Dict
+from typing import Type, Dict, Any
 from inspect import isclass
 
 from graphene import relay
+from graphene.types.base import BaseType
 from graphene.types.mountedtype import MountedType
 from graphene.types.objecttype import ObjectType, ObjectTypeOptions
 
 from django.db import models
 
+from graphene_extensions.utils.callables import get_properties, get_methods
+from graphene_extensions.utils.model_meta import get_fields
 from .registry import ConversionRegistry, ModelRegistry
 
 
@@ -55,23 +57,25 @@ class ModelType(ObjectType):
             raise AssertionError(message)
 
     @classmethod
-    def get_model_fields(cls, model: (Type[models.Model])) -> Dict[str, models.Field]:
-        return {field.name: field for field in chain(model._meta.fields, model._meta.many_to_many)}
+    def get_model_fields(cls, model: Type[models.Model]) -> Dict[str, Any]:
+        return {**get_properties(model),
+                **get_methods(model, skip=['clean', 'get_deferred_fields']),
+                **get_fields(model)}
 
     @classmethod
-    def resolve_fields(cls, model: Type[models.Model], fields) -> Dict[str, None]:
+    def resolve_fields(cls, model: Type[models.Model], fields) -> Dict[str, BaseType]:
         resolved_fields = collections.OrderedDict()
         model_fields = cls.get_model_fields(model)
         cls.validate_fields(model_fields, fields)
         if fields == '__all__':
             fields = model_fields.keys()
         for field in fields:
-            resolved_fields[field] = cls.get_graphene_type(model_fields[field])
+            resolved_fields[field] = cls.get_graphene_type(field, model_fields[field])
         return resolved_fields
 
     @classmethod
-    def get_graphene_type(cls, field: models.Field) -> MountedType:
-        return ConversionRegistry().get(field)
+    def get_graphene_type(cls, name: str, field: models.Field) -> MountedType:
+        return ConversionRegistry().get(name, field)
 
     @classmethod
     def resolve_model(cls, model):
