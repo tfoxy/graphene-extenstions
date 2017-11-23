@@ -7,7 +7,7 @@ import graphene
 from graphene import relay
 
 from graphene_extensions import ModelConnectionField
-from graphene_extensions.types import ModelObjectType
+from graphene_extensions import ModelObjectType
 
 from .models import PizzaType, Pizza, PandorasBox, Topping
 

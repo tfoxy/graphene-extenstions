@@ -1,4 +1,4 @@
-from graphene_extensions.utils.callables import get_property_names, get_method_names
+from ..callables import get_property_names, get_method_names
 
 
 def test_property_names():

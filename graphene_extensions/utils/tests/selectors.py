@@ -1,4 +1,4 @@
-from graphene_extensions.utils.selectors import strip_relay_selectors
+from ..selectors import strip_relay_selectors
 
 
 def test_strip_relay_selectors():

@@ -1,10 +1,10 @@
+import collections
 from itertools import chain
 from typing import Type, Dict
 from inspect import isclass
 
-import graphene
-from collections import OrderedDict
 from graphene import relay
+from graphene.types.mountedtype import MountedType
 from graphene.types.objecttype import ObjectType, ObjectTypeOptions
 
 from django.db import models
@@ -38,8 +38,7 @@ class ModelObjectType(ObjectType):
         return relay.Connection.create_type(class_name=f'{cls.__name__}Connection', node=cls)
 
     @classmethod
-    def validate_meta(cls, _meta: ModelObjectTypeOptions):
-        # type: (ModelObjectTypeOptions) -> None
+    def validate_meta(cls, _meta: ModelObjectTypeOptions) -> None:
         assert isinstance(_meta, ModelObjectTypeOptions), \
             f'class {_meta.__name__} must derive from ModelObjectTypeOptions'
 
@@ -61,7 +60,7 @@ class ModelObjectType(ObjectType):
 
     @classmethod
     def resolve_fields(cls, model: Type[models.Model], fields) -> Dict[str, None]:
-        resolved_fields = OrderedDict()
+        resolved_fields = collections.OrderedDict()
         model_fields = cls.get_model_fields(model)
         cls.validate_fields(model_fields, fields)
         if fields == '__all__':
@@ -71,7 +70,7 @@ class ModelObjectType(ObjectType):
         return resolved_fields
 
     @classmethod
-    def get_graphene_type(cls, field: models.Field) -> graphene.Field:
+    def get_graphene_type(cls, field: models.Field) -> MountedType:
         return ConversionRegistry().get(field)
 
     @classmethod

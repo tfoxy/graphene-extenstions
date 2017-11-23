@@ -1,9 +1,8 @@
 import pytest
-
 from django.db import models
 
-from graphene_extensions.registry import ModelRegistry
 from graphene_extensions.types import ModelObjectType
+from graphene_extensions.types.registry import ModelRegistry
 
 
 def test_model_registry():

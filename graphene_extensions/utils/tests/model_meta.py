@@ -1,5 +1,4 @@
-from graphene_extensions.utils.model_meta import get_field_names, get_related_fields, get_model_select, \
-    get_model_prefetch
+from ..model_meta import get_field_names, get_related_fields, get_model_select, get_model_prefetch
 
 from graphene_extensions.test_app.models import PizzaType, Pizza, Topping
 

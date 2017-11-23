@@ -1,15 +1,13 @@
 from typing import Type, Dict, Callable
 
 import graphene
-from graphene.types.base import BaseType
-
-from django.db import models
 from django.contrib.postgres import fields
+from django.db import models
+from graphene.types.base import BaseType
 from graphene.types.mountedtype import MountedType
 
 from graphene_extensions.connections import ModelConnectionField
-
-from .singleton import Singleton
+from graphene_extensions.utils.singleton import Singleton
 
 
 class ModelRegistry(metaclass=Singleton):
