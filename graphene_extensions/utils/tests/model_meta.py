@@ -1,7 +1,7 @@
 from graphene_extensions.utils.model_meta import get_field_names, get_related_fields, get_model_select, \
     get_model_prefetch
 
-from .models import PizzaType, Pizza, Topping
+from graphene_extensions.test_app.models import PizzaType, Pizza, Topping
 
 
 def test_pizza_type_field_names():

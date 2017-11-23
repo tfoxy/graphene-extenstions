@@ -1,6 +1,6 @@
 import json
 from collections import OrderedDict
-from typing import Tuple, Union
+from typing import Tuple, Optional
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -22,10 +22,6 @@ class GraphQLView(View):
     graphiql_template: str = 'graphiql.html'
 
     schema: GraphQLSchema = None
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.query_executor = QueryExecutor(self.schema)
 
     def dispatch(self, request: WSGIRequest, *args, **kwargs) -> HttpResponse:
         if request.method not in self.allowed_methods:
@@ -49,8 +45,11 @@ class GraphQLView(View):
     def get_query(self) -> str:
         return get_query_from_request(self.request)
 
-    def get_query_result(self, query: str) -> Tuple[Union[str, None], int]:
-        result = self.query_executor.query(query)
+    def execute_query(self, query: str) -> dict:
+        return QueryExecutor(self.schema).query(query)
+
+    def get_query_result(self, query: str) -> Tuple[Optional[str], int]:
+        result = self.execute_query(query)
         return self.jsonify(result), STATUS_400_BAD_REQUEST if 'errors' in result else STATUS_200_OK
 
     @classmethod
