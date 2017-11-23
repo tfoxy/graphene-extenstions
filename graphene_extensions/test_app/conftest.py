@@ -7,7 +7,7 @@ import graphene
 from graphene import relay
 
 from graphene_extensions import ModelConnectionField
-from graphene_extensions import ModelObjectType
+from graphene_extensions import ModelType
 
 from .models import PizzaType, Pizza, PandorasBox, Topping
 
@@ -56,13 +56,13 @@ def pizzas(pizza_types: List[PizzaType], toppings: List[Topping]) -> Iterable[Pi
 
 @pytest.fixture(scope='session')
 def pizza_schema() -> graphene.Schema:
-    class PizzaObject(ModelObjectType):
+    class PizzaObject(ModelType):
         class Meta:
             model = Pizza
             fields = ('name', 'toppings')
             interfaces = (relay.Node,)
 
-    class ToppingObject(ModelObjectType):
+    class ToppingObject(ModelType):
         class Meta:
             model = Topping
             fields = ('name',)
@@ -85,7 +85,7 @@ def pandoras_box() -> PandorasBox:
 
 @pytest.fixture(scope='session')
 def pandoras_box_schema(pandoras_box: PandorasBox) -> graphene.Schema:
-    class PandorasBoxObject(ModelObjectType):
+    class PandorasBoxObject(ModelType):
         class Meta:
             model = PandorasBox
             fields = '__all__'

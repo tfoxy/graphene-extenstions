@@ -1,1 +1,1 @@
-from .model_type import ModelObjectType
+from .model_type import ModelType

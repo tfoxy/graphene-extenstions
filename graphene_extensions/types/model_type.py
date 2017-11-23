@@ -12,17 +12,17 @@ from django.db import models
 from .registry import ConversionRegistry, ModelRegistry
 
 
-class ModelObjectTypeOptions(ObjectTypeOptions):
+class ModelTypeOptions(ObjectTypeOptions):
     model: Type[models.Model] = None
     connection: Type[relay.Connection] = None
 
 
-class ModelObjectType(ObjectType):
+class ModelType(ObjectType):
     @classmethod
     def __init_subclass_with_meta__(cls, interfaces=(), possible_types=(), default_resolver=None,
                                     _meta=None, model=None, fields=None, **options):
         if not _meta:
-            _meta = ModelObjectTypeOptions(cls)
+            _meta = ModelTypeOptions(cls)
             _meta.model = cls.resolve_model(model)
             _meta.connection = cls.create_connection()
             _meta.fields = cls.resolve_fields(model, fields)
@@ -38,8 +38,8 @@ class ModelObjectType(ObjectType):
         return relay.Connection.create_type(class_name=f'{cls.__name__}Connection', node=cls)
 
     @classmethod
-    def validate_meta(cls, _meta: ModelObjectTypeOptions) -> None:
-        assert isinstance(_meta, ModelObjectTypeOptions), \
+    def validate_meta(cls, _meta: ModelTypeOptions) -> None:
+        assert isinstance(_meta, ModelTypeOptions), \
             f'class {_meta.__name__} must derive from ModelObjectTypeOptions'
 
     @classmethod
