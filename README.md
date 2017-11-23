@@ -24,8 +24,8 @@ Why another library if there is already `graphene-django` available?
 
 ## Features
 * Simple schema generation from django models
-* [TODO] Support for model properties and methods
-* [TODO] query optimization, no more `prefetch_related` and `select_related`(sick!)
+* Support for model properties and methods
+* query optimization, no more `prefetch_related` and `select_related`(sick!)
 * [TODO] `Mutation` generation(with validators) from django models
 * GraphiQL browser query executor
 
@@ -37,8 +37,9 @@ Why another library if there is already `graphene-django` available?
 ```python
 import graphene
 
-from graphene_extensions.types import ModelObjectType
+from graphene_extensions.types import ModelType
 from graphene_extensions.connections import ModelConnectionField
+from graphene_extensions.types.decorators import annotate_type, graphene_property
 
 from django.db import models
 
@@ -46,15 +47,16 @@ from django.db import models
 class Pizza(models.Model):
     name = models.CharField(max_length=128)
     
-    @property
+    @graphene_property(graphene.String)
     def custom_name(self):
         return f'Custom {self.name}'
 
+    @annotate_type(graphene.String)
     def custom_method(self):
         return 'magic'
 
 
-class PizzaType(ModelObjectType):
+class PizzaType(ModelType):
     class Meta:
         model = Pizza
         fields = ('name', 'custom_name', 'custom_method')

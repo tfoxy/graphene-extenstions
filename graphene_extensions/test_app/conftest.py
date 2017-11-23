@@ -59,13 +59,13 @@ def pizza_schema() -> graphene.Schema:
     class PizzaObject(ModelType):
         class Meta:
             model = Pizza
-            fields = ('name', 'toppings')
+            fields = ('name', 'toppings', 'str')
             interfaces = (relay.Node,)
 
     class ToppingObject(ModelType):
         class Meta:
             model = Topping
-            fields = ('name',)
+            fields = ('name', 'str')
             interfaces = (relay.Node,)
 
     class Query(graphene.ObjectType):

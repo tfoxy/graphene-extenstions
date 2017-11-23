@@ -1,3 +1,4 @@
+import inspect
 import typing
 
 from graphene.types.base import BaseType
@@ -17,6 +18,8 @@ def annotate_type(graphene_type: typing.Type[BaseType]):
 
 
 def graphene_property(graphene_type: typing.Type[BaseType]):
+    assert not inspect.isfunction(graphene_type), f'@graphene_property should be initialized with a graphene type'
+
     assert issubclass(graphene_type, BaseType), \
         f'Type annotations have to of subclass graphene.BaseType, received {graphene_type}'
 

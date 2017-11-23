@@ -10,14 +10,14 @@ from .models import Pizza, Topping
 class PizzaObject(ModelType):
     class Meta:
         model = Pizza
-        fields = ('name', 'toppings')
+        fields = ('name', 'toppings', 'str')
         interfaces = (relay.Node,)
 
 
 class ToppingObject(ModelType):
     class Meta:
         model = Topping
-        fields = ('name',)
+        fields = ('name', 'str')
         interfaces = (relay.Node,)
 
 

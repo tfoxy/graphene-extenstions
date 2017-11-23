@@ -8,7 +8,6 @@ from graphene.types.base import BaseType
 from graphene.types.mountedtype import MountedType
 
 from graphene_extensions.connections import ModelConnectionField
-from graphene_extensions.types.decorators import GrapheneProperty
 from graphene_extensions.utils.singleton import Singleton
 
 
@@ -30,13 +29,33 @@ class ModelRegistry(metaclass=Singleton):
 
 
 class ConversionRegistry(metaclass=Singleton):
-    _registry: Dict[Type, BaseType] = {}
+    registry: Dict[Type, BaseType] = {}
+    wrapped_scalars: Dict[graphene.Scalar, graphene.Scalar] = {}
 
-    _related_fields = {models.ManyToManyField}
+    related_fields = {models.ManyToManyField}
 
     def register(self, _type: Type, graphene_type: Type[BaseType]) -> None:
         assert issubclass(graphene_type, BaseType)
-        self._registry[_type] = graphene_type
+        self.registry[_type] = graphene_type
+
+    def serialize_callable(self, graphene_type: Type[graphene.Scalar]):
+        assert issubclass(graphene_type, graphene.Scalar), \
+            f'Callable fields have to of type Scalar, received {graphene_type}'
+        if graphene_type in self.wrapped_scalars:
+            return self.wrapped_scalars[graphene_type]
+
+        class CallableScalar(graphene_type):
+            class Meta:
+                name = f'Callable{graphene_type.__name__}'
+
+            @staticmethod
+            def serialize_callable(value):
+                return graphene_type.serialize(value() if callable(value) else value)
+
+            serialize = serialize_callable
+
+        self.wrapped_scalars[graphene_type] = CallableScalar
+        return self.wrapped_scalars[graphene_type]
 
     def get(self, name: str, field: Any) -> MountedType:
         if isinstance(field, models.Field):
@@ -48,19 +67,19 @@ class ConversionRegistry(metaclass=Singleton):
         if inspect.isfunction(field):
             assert hasattr(field, '_graphene_type'), \
                 f'{name}: decorate method with @annotate_type to determine graphene type'
-            return graphene.Field(type=field._graphene_type)
+            return graphene.Field(type=self.serialize_callable(field._graphene_type))
         raise NotImplementedError(f'{name}: field conversion for type {field.__class__.__name__} are not supported')
 
     def get_model_type(self, field: models.Field) -> MountedType:
         type_ = field.__class__
-        if type_ in self._related_fields:
+        if type_ in self.related_fields:
             return self.get_related_model_type(field)
-        if type_ not in self._registry:
+        if type_ not in self.registry:
             raise NotImplementedError(f'{type_} field conversion is not implemented')
-        return graphene.Field(type=self._registry[type_])
+        return graphene.Field(type=self.registry[type_])
 
     def clear(self) -> None:
-        self._registry = {}
+        self.registry = {}
 
     @classmethod
     def get_related_model_type(cls, field: models.Field) -> graphene.Dynamic:
@@ -71,6 +90,7 @@ class ConversionRegistry(metaclass=Singleton):
     def get_field_resolver(cls, model: Type[models.Model]) -> Callable:
         def lazy_type():
             return ModelConnectionField(ModelRegistry().get(model))
+
         return lazy_type
 
 
