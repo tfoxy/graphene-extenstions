@@ -35,3 +35,7 @@ def get_model_select(model: Type[Model]) -> Dict[str, Type[Model]]:
 def get_model_prefetch(model: Type[Model]) -> Dict[str, Type[Model]]:
     return {get_field_name(field): field.related_model
             for field in get_related_fields(model) if is_prefetchable(field)}
+
+
+def get_model_columns(model: Type[Model]) -> Set[str]:
+    return {field.attname for field in model._meta._forward_fields_map.values() if not field.many_to_many}

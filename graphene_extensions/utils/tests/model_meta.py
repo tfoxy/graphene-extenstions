@@ -1,4 +1,4 @@
-from ..model_meta import get_fields, get_related_fields, get_model_select, get_model_prefetch
+from ..model_meta import get_fields, get_related_fields, get_model_select, get_model_prefetch, get_model_columns
 
 from graphene_extensions.test_app.models import PizzaType, Pizza, Topping
 
@@ -29,3 +29,9 @@ def test_model_prefetch():
     assert get_model_prefetch(Pizza) == {'toppings': Topping, 'type': PizzaType}
     assert get_model_prefetch(PizzaType) == {'pizza_set': Pizza}
     assert get_model_prefetch(Topping) == {'pizza_set': Pizza}
+
+
+def test_model_columns():
+    assert get_model_columns(Pizza) == {'id', 'type_id', 'name'}
+    assert get_model_columns(PizzaType) == {'id', 'name'}
+    assert get_model_columns(Topping) == {'id', 'name'}

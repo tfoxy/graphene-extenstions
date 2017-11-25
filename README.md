@@ -25,7 +25,7 @@ Why another library if there is already `graphene-django` available?
 ## Features
 * Simple schema generation from django models
 * Support for model properties and methods
-* query optimization, no more `prefetch_related` and `select_related`(sick!)
+* Query optimization, no more `prefetch_related` and `select_related`(sick!)
 * [TODO] `Mutation` generation(with validators) from django models
 * GraphiQL browser query executor
 

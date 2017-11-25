@@ -1,24 +1,23 @@
-from typing import Type, List
+from typing import Iterable, Type
 
-from django.db.models import Model, QuerySet
+from django.db.models import Model, QuerySet, Prefetch
 
-from graphene_extensions.utils.model_meta import get_model_prefetch
+from graphene_extensions.utils.model_meta import get_model_prefetch, get_model_columns
 from graphene_extensions.utils.selectors import Selector
 
 
 def optimize_queryset(queryset: QuerySet, selectors: Selector) -> QuerySet:
-    return queryset.prefetch_related(*get_prefetch(queryset.model, selectors))
+    return get_queryset(queryset.model, selectors)
 
 
-def get_prefetch(model: Type[Model], selectors: Selector) -> List[str]:
-    prefatchable_fields = get_model_prefetch(model)
-    prefetch = []
-    for field, selection in selectors.items():
-        if selection and field in prefatchable_fields:
-            sub_prefetches = get_prefetch(prefatchable_fields[field], selection)
-            if sub_prefetches:
-                for sub_field in sub_prefetches:
-                    prefetch.append(field + '__' + sub_field)
-            else:
-                prefetch.append(field)
-    return prefetch
+def get_queryset(model: Type[Model], selector: Selector) -> QuerySet:
+    return model._default_manager.get_queryset() \
+        .only(*(get_model_columns(model).intersection(selector.keys()))) \
+        .prefetch_related(*get_prefetch(model, selector))
+
+
+def get_prefetch(model: Type[Model], selector: Selector) -> Iterable[Prefetch]:
+    return (
+        Prefetch(field_name, queryset=get_queryset(field_model, selector[field_name]))
+        for field_name, field_model in get_model_prefetch(model).items() if field_name in selector.keys()
+    )
