@@ -6,7 +6,7 @@ from .models import PandorasBox
 
 
 def test_number_conversion(pandoras_box_schema, pandoras_box: PandorasBox):
-    field_names = [f.name for f in pandoras_box._meta.fields]  # type: List[str]
+    field_names: List[str] = [f.name for f in pandoras_box._meta.fields]
     response = Client(pandoras_box_schema).execute(
         'query {'
         '  pandoras_box {'

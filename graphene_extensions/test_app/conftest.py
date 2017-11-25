@@ -13,16 +13,6 @@ from .models import PizzaType, Pizza, PandorasBox, Topping
 
 
 @pytest.fixture(scope='session')
-def empty_schema():
-    class Query(graphene.ObjectType):
-        data = graphene.Field(type=graphene.String)
-
-        def resolve_data(self, info) -> str:
-            return 'dummy data'
-    return graphene.Schema(query=Query)
-
-
-@pytest.fixture(scope='session')
 def toppings() -> List[Topping]:
     return [
         Topping.objects.create(name='mushrooms'),

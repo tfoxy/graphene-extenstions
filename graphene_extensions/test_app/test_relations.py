@@ -6,7 +6,7 @@ import graphene
 from graphene.test import Client
 
 from .models import PizzaType, Pizza, Topping
-from .schema import PizzaObject
+
 
 pizza_topping_query = '''
     query {
