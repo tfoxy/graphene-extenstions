@@ -34,6 +34,7 @@ Why another library if there is already `graphene-django` available?
 ### Installation
 `pip install graphene-extensions`
 
+#### schema.py
 ```python
 import graphene
 
@@ -66,9 +67,9 @@ class Query(graphene.ObjectType):
     pizzas = ModelConnectionField(PizzaType)
 
 schema = graphene.Schema(query=Query)
-
 ```
 
+#### urls.py
 ```python
 from django.conf.urls import url
 
@@ -79,5 +80,4 @@ from .schema import schema
 urlpatterns = [
     url(r'^graphql', GraphQLView.as_view(schema=schema)),
 ]
-
 ```

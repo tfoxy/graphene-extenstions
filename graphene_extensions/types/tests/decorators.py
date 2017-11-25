@@ -28,7 +28,7 @@ def test_type_annotation():
         def bazaz(self) -> int:
             return 42
 
-    assert Foo.bar._graphene_type == graphene.String
+    assert issubclass(Foo.bar._graphene_type, graphene.String)
     assert Foo.baz._graphene_type == graphene.String
     assert Foo.bazaz._graphene_type == graphene.Int
 

@@ -11,7 +11,7 @@ from django.db import models
 
 from graphene_extensions.utils.callables import get_properties, get_methods
 from graphene_extensions.utils.model_meta import get_fields
-from .registry import ConversionRegistry, ModelRegistry
+from .registry import TypeRegistry, ModelRegistry
 
 
 class ModelTypeOptions(ObjectTypeOptions):
@@ -75,7 +75,7 @@ class ModelType(ObjectType):
 
     @classmethod
     def get_graphene_type(cls, name: str, field: models.Field) -> MountedType:
-        return ConversionRegistry().get(name, field)
+        return TypeRegistry().get(name, field)
 
     @classmethod
     def resolve_model(cls, model):
