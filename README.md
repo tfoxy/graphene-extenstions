@@ -1,6 +1,6 @@
 # graphene-extenstions 
 
-[ ![Codeship Status for karol-gruszczyk/graphene-extenstions](https://app.codeship.com/projects/730dd1c0-ad8a-0135-84ed-3a096c600948/status?branch=master)](https://app.codeship.com/projects/257231)
+[![Build Status](https://travis-ci.org/karol-gruszczyk/graphene-extenstions.svg?branch=master)](https://travis-ci.org/karol-gruszczyk/graphene-extenstions)
 
 Goal of this library is to make development on graphene a lot simpler and quicker,
  which means less boiler plate and more flexibility.
