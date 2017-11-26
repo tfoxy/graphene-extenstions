@@ -15,6 +15,7 @@ class Pizza(models.Model):
     type = models.ForeignKey(PizzaType)
     name = models.CharField(max_length=128)
     toppings = models.ManyToManyField(Topping)
+    extra_toppings = models.ManyToManyField(Topping, related_name='extra_pizzas')
 
 
 def test_pizza_type_field_names():
@@ -22,17 +23,17 @@ def test_pizza_type_field_names():
 
 
 def test_pizza_field_names():
-    assert get_fields(Pizza).keys() == {'id', 'pk', 'type', 'name', 'toppings'}
+    assert get_fields(Pizza).keys() == {'id', 'pk', 'type', 'name', 'toppings', 'extra_toppings'}
 
 
 def test_topping_field_names():
-    assert get_fields(Topping).keys() == {'id', 'pk', 'name', 'pizza_set'}
+    assert get_fields(Topping).keys() == {'id', 'pk', 'name', 'pizza_set', 'extra_pizzas'}
 
 
 def test_related_fields():
     assert {field.name for field in get_related_fields(PizzaType)} == {'pizza'}
-    assert {field.name for field in get_related_fields(Pizza)} == {'type', 'toppings'}
-    assert {field.name for field in get_related_fields(Topping)} == {'pizza'}
+    assert {field.name for field in get_related_fields(Pizza)} == {'type', 'toppings', 'extra_toppings'}
+    assert {field.name for field in get_related_fields(Topping)} == {'pizza', 'extra_pizzas'}
 
 
 def test_model_select():
@@ -40,9 +41,9 @@ def test_model_select():
 
 
 def test_model_prefetch():
-    assert get_model_prefetch(Pizza) == {'toppings': Topping, 'type': PizzaType}
+    assert get_model_prefetch(Pizza) == {'toppings': Topping, 'type': PizzaType, 'extra_toppings': Topping}
     assert get_model_prefetch(PizzaType) == {'pizza_set': Pizza}
-    assert get_model_prefetch(Topping) == {'pizza_set': Pizza}
+    assert get_model_prefetch(Topping) == {'pizza_set': Pizza, 'extra_pizzas': Pizza}
 
 
 def test_model_columns():

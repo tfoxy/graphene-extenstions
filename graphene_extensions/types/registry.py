@@ -4,6 +4,7 @@ from typing import Type, Dict, Callable, Any
 import graphene
 from django.contrib.postgres import fields
 from django.db import models
+from django.db.models.fields.reverse_related import ForeignObjectRel
 from graphene.types.base import BaseType
 from graphene.types.mountedtype import MountedType
 
@@ -31,14 +32,15 @@ class ModelRegistry(metaclass=Singleton):
 class TypeRegistry(metaclass=Singleton):
     registry: Dict[Type, BaseType] = {}
 
-    related_fields = {models.ManyToManyField}
+    foreign_fields = {models.OneToOneField, models.OneToOneRel, models.ForeignKey}
+    related_fields = {models.ManyToManyField, models.ManyToManyRel, models.ManyToOneRel} | foreign_fields
 
     def register(self, _type: Type, graphene_type: Type[BaseType]) -> None:
         assert issubclass(graphene_type, BaseType)
         self.registry[_type] = graphene_type
 
     def get(self, field: Any) -> MountedType:
-        if isinstance(field, models.Field):
+        if isinstance(field, (models.Field, ForeignObjectRel)):
             return self.get_model_type(field)
         if isinstance(field, property):
             assert hasattr(field, '_graphene_type'), f'decorate property with @annotate_type or use @graphene_property'
@@ -51,7 +53,7 @@ class TypeRegistry(metaclass=Singleton):
         raise NotImplementedError(f'field conversion for {field} is not supported')
 
     def get_model_type(self, field: models.Field) -> MountedType:
-        field_type = field.__class__
+        field_type = type(field)
         if field_type in self.related_fields:
             return self.get_related_model_type(field)
         if field_type not in self.registry:
@@ -64,13 +66,15 @@ class TypeRegistry(metaclass=Singleton):
     @classmethod
     def get_related_model_type(cls, field: models.Field) -> graphene.Dynamic:
         model = field.related_model
-        return graphene.Dynamic(cls.get_field_resolver(model))
+        return graphene.Dynamic(cls.get_field_resolver(model, many=type(field) not in cls.foreign_fields))
 
     @classmethod
-    def get_field_resolver(cls, model: Type[models.Model]) -> Callable:
+    def get_field_resolver(cls, model: Type[models.Model], many: bool) -> Callable:
+        field_class = ModelConnectionField if many else graphene.Field
+
         def lazy_type():
             model_type = ModelRegistry().get(model)
-            return ModelConnectionField(model_type)
+            return field_class(model_type)
 
         return lazy_type
 

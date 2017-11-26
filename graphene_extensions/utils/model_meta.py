@@ -4,14 +4,14 @@ from django.db.models import Model, Field
 from django.db.models.fields.reverse_related import ForeignObjectRel
 
 
-def get_related_fields(model: Type[Model]) -> Set[Field]:
-    return {field for field in model._meta.get_fields() if field.related_model}
-
-
 def get_field_name(field: Field) -> str:
     if isinstance(field, ForeignObjectRel):
-        return field.related_query_name or field.name + ('_set' if field.multiple else '')
+        return field.related_name or field.name + ('_set' if field.multiple else '')
     return field.name
+
+
+def get_related_fields(model: Type[Model]) -> Set[Field]:
+    return {field for field in model._meta.get_fields() if field.related_model}
 
 
 def get_fields(model: Type[Model]) -> Dict[str, Field]:
