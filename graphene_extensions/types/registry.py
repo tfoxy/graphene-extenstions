@@ -7,7 +7,7 @@ from django.db import models
 from graphene.types.base import BaseType
 from graphene.types.mountedtype import MountedType
 
-from graphene_extensions.connections import ModelConnectionField
+from graphene_extensions.fields import ModelConnectionField
 from graphene_extensions.utils.singleton import Singleton
 
 

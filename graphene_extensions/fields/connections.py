@@ -4,8 +4,8 @@ from graphql.execution.base import ResolveInfo
 
 from graphene.relay import Connection, ConnectionField
 
-from graphene_extensions.optimization import optimize_queryset
-from graphene_extensions.utils.selectors import get_selectors_from_info, strip_relay_selectors, Selector
+from graphene_extensions.optimization import get_queryset
+from graphene_extensions.utils.selectors import get_selectors_from_info, strip_relay_selectors
 
 from django.db.models import Manager, Model, QuerySet
 
@@ -32,8 +32,4 @@ class ModelConnectionField(ConnectionField):
     def get_initial_queryset(cls, model: Type[Model], info: ResolveInfo) -> QuerySet:
         selectors = get_selectors_from_info(info)
         manager: Type[Manager] = model._default_manager
-        return cls.optimize_queryset(manager.get_queryset(), strip_relay_selectors(selectors))
-
-    @classmethod
-    def optimize_queryset(cls, queryset: QuerySet, selectors: Selector) -> QuerySet:
-        return optimize_queryset(queryset, selectors)
+        return get_queryset(manager, strip_relay_selectors(selectors))

@@ -1,2 +1,2 @@
 from .types import ModelType
-from .connections import ModelConnectionField
+from .fields import ModelConnectionField

@@ -2,12 +2,8 @@ from typing import Iterable, Type
 
 from django.db.models import Model, QuerySet, Prefetch
 
-from graphene_extensions.utils.model_meta import get_model_prefetch, get_model_columns
-from graphene_extensions.utils.selectors import Selector
-
-
-def optimize_queryset(queryset: QuerySet, selectors: Selector) -> QuerySet:
-    return get_queryset(queryset.model, selectors)
+from .utils.model_meta import get_model_prefetch, get_model_columns
+from .utils.selectors import Selector
 
 
 def get_queryset(model: Type[Model], selector: Selector) -> QuerySet:
