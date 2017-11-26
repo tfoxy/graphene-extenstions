@@ -1,6 +1,7 @@
 # graphene-extenstions 
 
 [![Build Status](https://travis-ci.org/karol-gruszczyk/graphene-extenstions.svg?branch=master)](https://travis-ci.org/karol-gruszczyk/graphene-extenstions)
+[![Coverage Status](https://coveralls.io/repos/github/karol-gruszczyk/graphene-extenstions/badge.svg?branch=master)](https://coveralls.io/github/karol-gruszczyk/graphene-extenstions?branch=master)
 
 Goal of this library is to make development on graphene a lot simpler and quicker,
  which means less boiler plate and more flexibility.
