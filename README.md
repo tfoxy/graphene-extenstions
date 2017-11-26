@@ -1,4 +1,7 @@
-# graphene-extenstions
+# graphene-extenstions 
+
+[ ![Codeship Status for karol-gruszczyk/graphene-extenstions](https://app.codeship.com/projects/730dd1c0-ad8a-0135-84ed-3a096c600948/status?branch=master)](https://app.codeship.com/projects/257231)
+
 Goal of this library is to make development on graphene a lot simpler and quicker,
  which means less boiler plate and more flexibility.
 
@@ -26,7 +29,7 @@ Why another library if there is already `graphene-django` available?
 * Simple schema generation from django models
 * Support for model properties and methods
 * Query optimization, no more `prefetch_related` and `select_related`(sick!)
-* [TODO] `Mutation` generation(with validators) from django models
+* [TODO] `Mutation` generation(with validators, similar to DRF style) from django models
 * GraphiQL browser query executor
 
 ## Quick start

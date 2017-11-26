@@ -1,6 +1,20 @@
+from django.db import models
+
 from ..model_meta import get_fields, get_related_fields, get_model_select, get_model_prefetch, get_model_columns
 
-from graphene_extensions.test_app.models import PizzaType, Pizza, Topping
+
+class Topping(models.Model):
+    name = models.CharField(max_length=128)
+
+
+class PizzaType(models.Model):
+    name = models.CharField(max_length=128)
+
+
+class Pizza(models.Model):
+    type = models.ForeignKey(PizzaType)
+    name = models.CharField(max_length=128)
+    toppings = models.ManyToManyField(Topping)
 
 
 def test_pizza_type_field_names():
