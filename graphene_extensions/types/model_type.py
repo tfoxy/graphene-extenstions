@@ -70,12 +70,15 @@ class ModelType(ObjectType):
         if fields == '__all__':
             fields = model_fields.keys()
         for field in fields:
-            resolved_fields[field] = cls.get_graphene_type(field, model_fields[field])
+            try:
+                resolved_fields[field] = cls.get_graphene_type(model_fields[field])
+            except AssertionError as e:
+                raise AssertionError(f'{field}: {e}')
         return resolved_fields
 
     @classmethod
-    def get_graphene_type(cls, name: str, field: models.Field) -> MountedType:
-        return TypeRegistry().get(name, field)
+    def get_graphene_type(cls, field: models.Field) -> MountedType:
+        return TypeRegistry().get(field)
 
     @classmethod
     def resolve_model(cls, model):

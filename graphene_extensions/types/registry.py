@@ -37,18 +37,18 @@ class TypeRegistry(metaclass=Singleton):
         assert issubclass(graphene_type, BaseType)
         self.registry[_type] = graphene_type
 
-    def get(self, name: str, field: Any) -> MountedType:
+    def get(self, field: Any) -> MountedType:
         if isinstance(field, models.Field):
             return self.get_model_type(field)
         if isinstance(field, property):
-            assert hasattr(field, '_graphene_type'), \
-                f'{name}: decorate property with @annotate_type or use @graphene_property'
+            assert hasattr(field, '_graphene_type'), f'decorate property with @annotate_type or use @graphene_property'
             return graphene.Field(type=field._graphene_type)
         if inspect.isfunction(field):
-            assert hasattr(field, '_graphene_type'), \
-                f'{name}: decorate method with @annotate_type to determine graphene type'
+            assert hasattr(field, '_graphene_type'), f'decorate method with @annotate_type to determine graphene type'
             return graphene.Field(type=field._graphene_type)
-        raise NotImplementedError(f'{name}: field conversion for type {field.__class__.__name__} are not supported')
+        if inspect.isclass(field) and issubclass(field, models.Field):
+            raise AssertionError(f'Expected field instance, got class: {field}')
+        raise NotImplementedError(f'field conversion for {field} is not supported')
 
     def get_model_type(self, field: models.Field) -> MountedType:
         field_type = field.__class__
@@ -89,6 +89,10 @@ register(models.FloatField, graphene.Float)
 
 register(models.CharField, graphene.String)
 register(models.TextField, graphene.String)
+register(models.EmailField, graphene.String)
 register(models.FileField, graphene.String)
+
+register(models.DateField, graphene.String)
+register(models.DateTimeField, graphene.String)
 
 register(fields.JSONField, graphene.JSONString)
