@@ -1,8 +1,11 @@
-graphene==2.0
-django
+graphene>=2.0
+django>=1.10
 psycopg2
+
+# development
 pytest
 pytest-cov
 pytest-django
 coveralls
 django-debug-toolbar
+wheel

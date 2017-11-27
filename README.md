@@ -47,15 +47,14 @@ This library will try it best to fix all the above, and provide an all-in-one Gr
 ## Quick start
 
 ### Installation
-`pip install graphene-extensions`  # will come soon
+`pip install graphene-extensions`
 
 #### schema.py
 ```python
 import graphene
 
-from graphene_extensions.types import ModelType
-from graphene_extensions.connections import ModelConnectionField
-from graphene_extensions.types.decorators import annotate_type, graphene_property
+from graphene_extensions import ModelType, ModelConnectionField
+from graphene_extensions.decorators import annotate_type, graphene_property
 
 from django.db import models
 
