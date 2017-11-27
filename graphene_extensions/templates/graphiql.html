@@ -44,6 +44,13 @@
      * various React params to enable interesting integrations.
      */
         // Parse the search string to get url parameters.
+        // Parse the cookie value for a CSRF token
+    var csrf_token;
+    var cookies = ('; ' + document.cookie).split('; csrftoken=');
+    if (cookies.length === 2) {
+        csrf_token = cookies.pop().split(';').shift();
+    }
+
     var search = window.location.search;
     var parameters = {};
     search.substr(1).split('&').forEach(function (entry) {
@@ -95,11 +102,13 @@
     function graphQLFetcher(graphQLParams) {
         // This example expects a GraphQL server at the path /graphql.
         // Change this to point wherever you host your GraphQL server.
-        return fetch('/graphql', {
+
+        return fetch(window.location.pathname, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrf_token,
             },
             body: JSON.stringify(graphQLParams),
             credentials: 'include',
@@ -124,9 +133,9 @@
             response: '{{ result|escapejs }}',
             onEditQuery: onEditQuery,
             onEditVariables: onEditVariables,
-            onEditOperationName: onEditOperationName
+            onEditOperationName: onEditOperationName,
         }),
-        document.getElementById('graphiql')
+        document.getElementById('graphiql'),
     );
 </script>
 </body>

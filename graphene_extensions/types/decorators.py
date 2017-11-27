@@ -8,6 +8,7 @@ from .factories import CallableScalarFactory
 
 
 def annotate_type(graphene_type: Type[BaseType]):
+    assert not isinstance(graphene_type, BaseType), f'Expected type class, got instance: {graphene_type}'
     assert issubclass(graphene_type, BaseType), \
         f'Type annotations have to of subclass graphene.BaseType, received {graphene_type}'
 
@@ -25,6 +26,7 @@ def annotate_type(graphene_type: Type[BaseType]):
 def graphene_property(graphene_type: Type[BaseType]):
     assert not inspect.isfunction(graphene_type), f'@graphene_property should be initialized with a graphene type'
 
+    assert not isinstance(graphene_type, BaseType), f'Expected type class, got instance: {graphene_type}'
     assert issubclass(graphene_type, BaseType), \
         f'Type annotations have to of subclass graphene.BaseType, received {graphene_type}'
 

@@ -30,6 +30,4 @@ class ModelConnectionField(ConnectionField):
 
     @classmethod
     def get_initial_queryset(cls, model: Type[Model], info: ResolveInfo) -> QuerySet:
-        selectors = get_selectors_from_info(info)
-        manager: Type[Manager] = model._default_manager
-        return get_queryset(manager, strip_relay_selectors(selectors))
+        return get_queryset(model, strip_relay_selectors(get_selectors_from_info(info)))

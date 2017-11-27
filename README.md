@@ -96,6 +96,16 @@ urlpatterns = [
 ]
 ```
 
+## Examples
+Simple clone the repository and:
+```bash
+./manage.py load_fixtures
+./manage.py runserver
+```
+
+And go to one of the following demo schemas:
+* <http://localhost:8000/restaurants/graphql>
+
 ## Documentation
 
 ### ModelType
