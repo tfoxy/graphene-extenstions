@@ -42,7 +42,8 @@ This library will try it best to fix all the above, and provide an all-in-one Gr
 
 ## Disclaimer
 * Support for <Python3.6 may be added in the future, if requested by enough users
-* currently only relay schema is supported
+* You can register only one ModelType per Model,
+  as only the first registered one will be used for creating connections
 
 ## Quick start
 
@@ -97,7 +98,7 @@ urlpatterns = [
 ```
 
 ## Examples
-Simple clone the repository and:
+Simply clone the repository and:
 ```bash
 ./manage.py load_fixtures
 ./manage.py runserver

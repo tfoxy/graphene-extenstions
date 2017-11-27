@@ -8,7 +8,6 @@ from django.db.models.fields.reverse_related import ForeignObjectRel
 from graphene.types.base import BaseType
 from graphene.types.mountedtype import MountedType
 
-from graphene_extensions.fields import ModelConnectionField
 from graphene_extensions.utils.singleton import Singleton
 
 
@@ -70,11 +69,9 @@ class TypeRegistry(metaclass=Singleton):
 
     @classmethod
     def get_field_resolver(cls, model: Type[models.Model], many: bool) -> Callable:
-        field_class = ModelConnectionField if many else graphene.Field
-
         def lazy_type():
             model_type = ModelRegistry().get(model)
-            return field_class(model_type)
+            return model_type.get_field_class(many)(model_type)
 
         return lazy_type
 

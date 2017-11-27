@@ -1,7 +1,7 @@
 from distutils.core import setup
 from setuptools import find_packages
 
-VERSION = '0.1.0b1'
+VERSION = '0.1.0b4'
 
 setup(
     name='graphene-extensions',
@@ -12,7 +12,7 @@ setup(
     author='Karol Gruszczyk',
     author_email='karol.gruszczyk@gmail.com',
 
-    packages=[package for package in find_packages() if 'tests' not in package],
+    packages=[package for package in find_packages() if all(p not in package for p in ('tests', 'examples'))],
 
     url='https://github.com/karol-gruszczyk/graphene-extenstions/',
     keywords='graphql framework django relay graphene',

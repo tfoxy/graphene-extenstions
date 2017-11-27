@@ -2,7 +2,7 @@ from django.db import models
 
 import graphene
 
-from graphene_extensions.fields.connections import ModelConnectionField
+from graphene_extensions.fields import ModelConnectionField
 from graphene_extensions.types.model_type import ModelType
 
 
@@ -51,6 +51,7 @@ def test_foreign_rel():
         class Meta:
             model = ForeignB
             fields = '__all__'
+            interfaces = (graphene.Node,)
 
     assert_dynamic_type(ForeignBType, 'foreign', graphene.Field, ForeignAType)
     assert_dynamic_type(ForeignAType, 'foreigns', ModelConnectionField, ForeignBType._meta.connection)
@@ -67,11 +68,13 @@ def test_many_to_many_rel():
         class Meta:
             model = ManyToManyA
             fields = '__all__'
+            interfaces = (graphene.Node,)
 
     class ManyToManyBType(ModelType):
         class Meta:
             model = ManyToManyB
             fields = '__all__'
+            interfaces = (graphene.Node,)
 
     assert_dynamic_type(ManyToManyAType, 'many_to_many', ModelConnectionField, ManyToManyBType._meta.connection)
     assert_dynamic_type(ManyToManyBType, 'many_to_many', ModelConnectionField, ManyToManyAType._meta.connection)

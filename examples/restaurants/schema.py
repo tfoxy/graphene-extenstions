@@ -1,5 +1,5 @@
 import graphene
-from graphene_extensions.fields.connections import ModelConnectionField
+from graphene_extensions import ModelListField
 
 from graphene_extensions import ModelType
 
@@ -31,10 +31,10 @@ class ToppingType(ModelType):
 
 
 class Query(graphene.ObjectType):
-    owners = ModelConnectionField(OwnerType)
-    restaurants = ModelConnectionField(RestaurantType)
-    pizzas = ModelConnectionField(PizzaType)
-    toppings = ModelConnectionField(ToppingType)
+    owners = ModelListField(OwnerType)
+    restaurants = ModelListField(RestaurantType)
+    pizzas = ModelListField(PizzaType)
+    toppings = ModelListField(ToppingType)
 
 
 schema = graphene.Schema(query=Query)
