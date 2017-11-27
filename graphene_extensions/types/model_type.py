@@ -21,19 +21,24 @@ class ModelTypeOptions(ObjectTypeOptions):
 
 class ModelType(ObjectType):
     @classmethod
-    def __init_subclass_with_meta__(cls, interfaces=(), possible_types=(), default_resolver=None,
-                                    _meta=None, model=None, fields=None, **options):
+    def __init_subclass_with_meta__(cls, interfaces=(), possible_types=(), default_resolver=None, _meta=None,
+                                    model=None, fields=None, exclude_fields=None, connection=None,
+                                    **options):
         if not _meta:
             _meta = ModelTypeOptions(cls)
             _meta.model = cls.resolve_model(model)
-            _meta.connection = cls.create_connection()
-            _meta.fields = cls.resolve_fields(model, fields)
+            _meta.connection = connection or cls.create_connection()
+            _meta.fields = cls.resolve_fields(model, fields, exclude_fields)
         cls.validate_meta(_meta)
-        ModelRegistry().register(model, cls)
+        cls.register_model(model)
         super().__init_subclass_with_meta__(interfaces, possible_types, default_resolver, _meta, **options)
 
     def resolve_id(self, info):  # used to determine ID field when using relay.Node interface
         return self.pk
+
+    @classmethod
+    def register_model(cls, model) -> None:
+        ModelRegistry().register(model, cls)
 
     @classmethod
     def create_connection(cls) -> Type[relay.Connection]:
@@ -51,8 +56,6 @@ class ModelType(ObjectType):
             for field in fields:
                 assert isinstance(field, str), f'Field name should be of type str, received {field}'
                 assert field in model_fields, f'Invalid field "{field}", options are: {tuple(model_fields.keys())}'
-        elif isinstance(fields, str):
-            assert fields in ('__all__',), message
         else:
             raise AssertionError(message)
 
@@ -63,12 +66,17 @@ class ModelType(ObjectType):
                 **get_fields(model)}
 
     @classmethod
-    def resolve_fields(cls, model: Type[models.Model], fields) -> Dict[str, BaseType]:
+    def resolve_fields(cls, model: Type[models.Model], fields, exclude_fields) -> Dict[str, BaseType]:
         resolved_fields = collections.OrderedDict()
         model_fields = cls.get_model_fields(model)
-        cls.validate_fields(model_fields, fields)
+
+        assert not (fields and exclude_fields), f'Using "fields" and "exclude_fields" together is ambiguous'
+        if exclude_fields:
+            fields = [field for field in model_fields.keys() if field not in exclude_fields]
         if fields == '__all__':
-            fields = model_fields.keys()
+            fields = tuple(model_fields.keys())
+
+        cls.validate_fields(model_fields, fields)
         for field in fields:
             try:
                 resolved_fields[field] = cls.get_graphene_type(model_fields[field])

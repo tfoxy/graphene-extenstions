@@ -33,10 +33,13 @@ Why another library if there is already `graphene-django` available?
 * [TODO] `Mutation` generation(with validators, similar to DRF style) from django models
 * GraphiQL browser query executor
 
+## Disclaimer
+* currently only relay schema is supported
+
 ## Quick start
 
 ### Installation
-`pip install graphene-extensions`
+`pip install graphene-extensions`  # will come soon
 
 #### schema.py
 ```python
@@ -84,4 +87,27 @@ from .schema import schema
 urlpatterns = [
     url(r'^graphql', GraphQLView.as_view(schema=schema)),
 ]
+```
+
+## Documentation
+
+### ModelType
+```python
+from graphene_extensions import ModelType
+
+
+class UserType(ModelType):
+    class Meta:
+        model = User  # required, has to be a subclass of django.db.models.Model
+        
+        # you can specifically pick, which fields should be included
+        fields = ('id', 'pk', 'field')  
+        # or exclude fields
+        exclude_fields = ('password',)
+        # or pick all fields
+        # it will also include all valid properties, methods and reverse related fields
+        fields = '__all__'
+        
+        # if you don't want to use the default connection, you can specify a custom one by:
+        connection = UserConnection
 ```
