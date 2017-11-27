@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/karol-gruszczyk/graphene-extenstions/badge.svg?branch=master)](https://coveralls.io/github/karol-gruszczyk/graphene-extenstions?branch=master)
 
 Goal of this library is to make development on graphene a lot simpler and quicker,
- which means less boiler plate and more flexibility.
+  which means less boiler plate and more flexibility.
 
 ## Requirements
 * Python 3.6+
@@ -14,26 +14,34 @@ Goal of this library is to make development on graphene a lot simpler and quicke
 ## Purpose
 Why another library if there is already `graphene-django` available?
 * Poor documentation, only a couple of documented features. v1 and v2 documentation is mixed,
- which ends up in user frustration.
- You can copy paste examples from the documentation and it will result in errors,
-  because it's written for graphene v1, which is ridiculous.
+  which ends up in user frustration.
+  You can copy-paste examples from the documentation and it will result in errors,
+  because it hasn't been updated for v2.
 * Lack of query optimization, which really should be handled by the framework itself
 * Extendability is very poor.
  In most cases you need to copy-paste the source code into your project, to get more custom behaviour.
 * But the main reason is, that the project is evolving very slowly and does not seem,
- that there will be any new features in the near future
+  that there will be any new features in the near future
 * `django-rest-framework` dependency. Authors got really lazy and did not bother writing proper `Mutation` classes...
- Seriously, why do I need to install a REST library, when I want to use GraphQL?
+  Seriously, why do I need to install a REST library, when I want to use GraphQL?
 * No Server Error handling, which results in Exception message leakage.
+
+This library will try it best to fix all the above, and provide an all-in-one GraphQL framework for django,
+ rather than extending it with X plugin libraries
 
 ## Features
 * Simple schema generation from django models
 * Support for model properties and methods
 * Query optimization, no more `prefetch_related` and `select_related`(sick!)
 * [TODO] `Mutation` generation(with validators, similar to DRF style) from django models
+* Schema resolution based on context(for example authenticated user)
+* [TODO] `django-filter` support
+* [TODO] support for filtering based on the query context(for ex. authenticated user), 
+  in order to achieve basic permission-like behaviour
 * GraphiQL browser query executor
 
 ## Disclaimer
+* Support for <Python3.6 may be added in the future, if requested by enough users
 * currently only relay schema is supported
 
 ## Quick start
@@ -110,4 +118,25 @@ class UserType(ModelType):
         
         # if you don't want to use the default connection, you can specify a custom one by:
         connection = UserConnection
+```
+
+
+### GraphQLView
+
+#### context based schema resolution
+Prevent schema leakage by returning different schemas, based on the authenticated user
+```python
+from django.core.handlers.wsgi import WSGIRequest
+from graphene_extensions.views import GraphQLView
+
+
+def get_schema(request: WSGIRequest):
+    if request.user.is_authenticated():
+        return authenticated_schema
+    return public_schema
+
+
+urlpatterns = [
+    url(r'^graphql', GraphQLView.as_view(schema=get_schema))
+]
 ```

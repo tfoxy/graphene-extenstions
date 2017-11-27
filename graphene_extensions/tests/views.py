@@ -1,5 +1,6 @@
 import json
 
+from django.core.handlers.wsgi import WSGIRequest
 from django.http.response import HttpResponse
 from django.test.client import RequestFactory
 
@@ -35,3 +36,12 @@ def test_invalid_query(rf: RequestFactory, empty_schema):
         response: HttpResponse = GraphQLView.as_view(schema=empty_schema)(request)
         assert response.status_code == STATUS_400_BAD_REQUEST, str(response.content)
         assert 'errors' in json.loads(response.content)
+
+
+def test_callable_schema(rf: RequestFactory, empty_schema):
+    def get_schema(request: WSGIRequest):
+        return empty_schema
+
+    view = GraphQLView(schema=get_schema)
+    view.request = rf.get('graphql', data={})
+    assert view.get_schema() == empty_schema
